@@ -1,0 +1,132 @@
+strategy_name: project2_gtaa_expanded_momentum_carry
+
+data:
+  workbook: data/raw/multi_asset_universe.xlsx
+  frequency: monthly
+  return_type: simple
+
+# ── Six implementation sleeves ────────────────────────────────────────────────
+sleeves:
+  equity_momentum:
+    returns_sheet: equity_msci_returns
+    signal_source: returns
+    signal: momentum_12_1
+    assets:
+      EWA: Australia
+      EWC: Canada
+      EWQ: France
+      EWG: Germany
+      EWI: Italy
+      EWJ: Japan
+      EWN: Netherlands
+      EWP: Spain
+      EWU: UnitedKingdom
+      SPY: UnitedStates
+
+  commodity_momentum:
+    prices_sheet: commodity_prices
+    returns_sheet: commodity_returns
+    signal_source: prices
+    signal: momentum_12_1
+    assets:
+      GLD: Gold
+      SLV: Silver
+      CPER: Copper
+      PPLT: Platinum
+      PALL: Palladium
+      USO: WTI_Crude
+      BNO: Brent_Crude
+      UNG: NaturalGas
+      DBA: AgricultureBasket
+      CORN: Corn
+      WEAT: Wheat
+      SOYB: Soybeans
+
+  fixed_income_momentum:
+    returns_sheet: fi_etf_returns
+    signal_source: returns
+    signal: momentum_12_1
+    assets:
+      SHV: UltraShortTreasury
+      SHY: Treasury_1_3Y
+      IEI: Treasury_3_7Y
+      IEF: Treasury_7_10Y
+      TLH: Treasury_10_20Y
+      TLT: Treasury_20YPlus
+      VTIP: ShortTIPS
+      TIP: TIPS
+      LQD: InvestmentGradeCredit
+      HYG: HighYieldCredit
+
+  fx_momentum:
+    prices_sheet: fx_prices
+    returns_sheet: fx_returns
+    signal_source: prices
+    signal: momentum_12_1
+    assets:
+      FXE: Euro
+      FXY: JapaneseYen
+      FXB: BritishPound
+      FXA: AustralianDollar
+      FXC: CanadianDollar
+      FXF: SwissFranc
+
+  fixed_income_carry:
+    returns_sheet: fi_etf_returns
+    signal_sheet: fi_carry_signals
+    signal: fixed_income_carry
+    assets:
+      SHV: UltraShortTreasury
+      SHY: Treasury_1_3Y
+      IEI: Treasury_3_7Y
+      IEF: Treasury_7_10Y
+      TLH: Treasury_10_20Y
+      TLT: Treasury_20YPlus
+      VTIP: ShortTIPS
+      TIP: TIPS
+      LQD: InvestmentGradeCredit
+      HYG: HighYieldCredit
+
+  fx_carry:
+    returns_sheet: fx_returns
+    signal_sheet: fx_carry_signals
+    signal: fx_carry
+    assets:
+      FXE: Euro
+      FXY: JapaneseYen
+      FXB: BritishPound
+      FXA: AustralianDollar
+      FXC: CanadianDollar
+      FXF: SwissFranc
+
+# ── Risk parameters (unchanged from baseline) ────────────────────────────────
+risk:
+  covariance_lookback_months: 36
+  annualization: 12
+  covariance_estimator: population
+  sleeve_target_vol: 0.01
+  factor_family_target_vol: 0.01
+  final_target_vol: 0.01
+
+# ── Factor-family construction ────────────────────────────────────────────────
+factor_families:
+  cross_asset_momentum:
+    equity_momentum:          0.25
+    commodity_momentum:       0.25
+    fixed_income_momentum:    0.25
+    fx_momentum:              0.25
+
+  cross_asset_carry:
+    fixed_income_carry:       0.50
+    fx_carry:                 0.50
+
+# ── Final allocation ──────────────────────────────────────────────────────────
+allocation:
+  base_case:
+    cross_asset_momentum:     0.50
+    cross_asset_carry:        0.50
+
+backtest:
+  rebalance_frequency: monthly
+  return_alignment: weights_t_returns_t_plus_1
+  transaction_cost_bps: 0

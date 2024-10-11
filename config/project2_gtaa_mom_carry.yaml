@@ -1,0 +1,76 @@
+strategy_name: project2_gtaa_equity_commodity_momentum_fi_carry
+
+data:
+  workbook: data/raw/multi_asset_universe.xlsx
+  frequency: monthly
+  return_type: simple
+
+sleeves:
+  equity_momentum:
+    returns_sheet: equity_msci_returns
+    signal_source: returns
+    signal: momentum_12_1
+    assets:
+      EWA: Australia
+      EWC: Canada
+      EWQ: France
+      EWG: Germany
+      EWI: Italy
+      EWJ: Japan
+      EWN: Netherlands
+      EWP: Spain
+      EWU: UnitedKingdom
+      SPY: UnitedStates
+
+  commodity_momentum:
+    prices_sheet: commodity_prices
+    returns_sheet: commodity_returns
+    signal_source: prices
+    signal: momentum_12_1
+    assets:
+      GLD: Gold
+      SLV: Silver
+      CPER: Copper
+      PPLT: Platinum
+      PALL: Palladium
+      USO: WTI_Crude
+      BNO: Brent_Crude
+      UNG: NaturalGas
+      DBA: AgricultureBasket
+      CORN: Corn
+      WEAT: Wheat
+      SOYB: Soybeans
+
+  fixed_income_carry:
+    returns_sheet: fi_etf_returns
+    signal_sheet: fi_carry_signals
+    signal: yield_curve_carry
+    assets:
+      SHV: UltraShortTreasury
+      SHY: Treasury_1_3Y
+      IEI: Treasury_3_7Y
+      IEF: Treasury_7_10Y
+      TLH: Treasury_10_20Y
+      TLT: Treasury_20YPlus
+      VTIP: ShortTIPS
+      TIP: TIPS
+      LQD: InvestmentGradeCredit
+      HYG: HighYieldCredit
+
+risk:
+  covariance_lookback_months: 36
+  annualization: 12
+  covariance_estimator: population
+  fmp_target_vol: 0.01
+  final_target_vol: 0.01
+
+allocation:
+  base_case:
+    equity_momentum: 0.3333333333
+    commodity_momentum: 0.3333333333
+    fixed_income_carry: 0.3333333333
+
+backtest:
+  rebalance_frequency: monthly
+  return_alignment: weights_t_returns_t_plus_1
+  transaction_cost_bps: 0
