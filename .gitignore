@@ -38,3 +38,7 @@ Thumbs.db
 **/__pycache__/
 
 outputs/*.xlsx
+
+# Local agent / IDE state
+.claude/
+.pytest_cache/
