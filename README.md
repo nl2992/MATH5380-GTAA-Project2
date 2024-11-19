@@ -184,17 +184,61 @@ Additional tables, turnover plots, and final-period risk visuals are in
 
 ## Data Pull and Preparation Code
 
-- [scripts/pull_universe_data.py](scripts/pull_universe_data.py): rebuilds the
-  core multi-asset workbook from the provided equity file, Yahoo Finance ETF
-  histories, and FRED rate and yield series.
-- [scripts/add_fx_data.py](scripts/add_fx_data.py): appends the FX ETF price,
-  return, and carry sheets used in the expanded specification.
-- [src/gtaa/io/excel_loader.py](src/gtaa/io/excel_loader.py): loading and
-  cleaning logic used by the notebooks.
-- [data/raw/Data for final project 2 .xlsx](data/raw/Data%20for%20final%20project%202%20.xlsx):
-  provided course file used in the initial universe build.
-- [data/raw/multi_asset_universe.xlsx](data/raw/multi_asset_universe.xlsx):
-  final workbook consumed by the notebooks and backtests.
+### Extraction scripts
+
+- [`scripts/pull_universe_data.py`](scripts/pull_universe_data.py) — builds the
+  core multi-asset workbook from the provided MSCI equity file, Yahoo Finance
+  ETF histories (equity, fixed income, commodity), and FRED rate / yield
+  series. Writes `data/raw/multi_asset_universe.xlsx` plus
+  `data/raw/multi_asset_coverage.csv`.
+- [`scripts/add_fx_data.py`](scripts/add_fx_data.py) — appends the three FX
+  sheets (`fx_prices`, `fx_returns`, `fx_carry_signals`) used by the expanded
+  specification. Pulls FX ETF prices from Yahoo Finance and 3-month interbank
+  rates from FRED (`IR3TIB01*`).
+- [`src/gtaa/io/excel_loader.py`](src/gtaa/io/excel_loader.py) — loading,
+  date-parsing, dtype-coercion and partial-universe alignment logic used by the
+  notebooks; entry point `load_gtaa_expanded_data()`.
+
+### Source files
+
+- [`data/raw/Data for final project 2 .xlsx`](data/raw/Data%20for%20final%20project%202%20.xlsx)
+  — provided course file. Two sheets:
+  - `Country equity returns` — monthly local-currency MSCI total returns for
+    Australia, Canada, France, Germany, Italy, Japan, Netherlands, Spain, UK,
+    US.
+  - `Country equity PE ratios` — matching monthly P/E series.
+- [`data/raw/multi_asset_universe.xlsx`](data/raw/multi_asset_universe.xlsx)
+  — consolidated workbook consumed by every notebook and backtest. Sheets used
+  by the submission:
+
+  | Sheet | Used for | Source |
+  |---|---|---|
+  | `equity_msci_returns` | Equity Momentum signal and sleeve returns | course file (above) |
+  | `equity_msci_pe` | Diagnostic only (not in final pipeline) | course file |
+  | `equity_etf_prices` / `equity_etf_returns` | Equity sleeve return alignment | Yahoo Finance — EWA, EWC, EWG, EWI, EWJ, EWN, EWP, EWQ, EWU, SPY |
+  | `fi_etf_prices` / `fi_etf_returns` | Fixed-Income sleeve returns (Momentum + Carry) | Yahoo Finance — SHV, SHY, IEI, IEF, TLH, TLT, VTIP, TIP, LQD, HYG |
+  | `fi_yields_fred` | Raw Treasury / credit yield curve | FRED — DGS3MO, DGS1, DGS2, DGS5, DGS7, DGS10, DGS20, DGS30, DAAA, DBAA, BAA10YM |
+  | `fi_carry_signals` | Fixed-Income Carry signal (yield proxy) | built from `fi_yields_fred` |
+  | `commodity_prices` / `commodity_returns` | Commodity Momentum signal and sleeve returns | Yahoo Finance — BNO, CORN, CPER, DBA, GLD, PALL, PPLT, SLV, SOYB, UNG, USO, WEAT |
+  | `fx_prices` / `fx_returns` | FX Momentum signal and sleeve returns | Yahoo Finance — FXE, FXY, FXB, FXA, FXC, FXF |
+  | `fx_carry_signals` | FX Carry signal (foreign 3M minus USD 3M) | FRED — `IR3TIB01EZM156N`, `IR3TIB01JPM156N`, `IR3TIB01GBM156N`, `IR3TIB01AUM156N`, `IR3TIB01CAM156N`, `IR3TIB01CHM156N`, `IR3TIB01USM156N` |
+  | `ticker_metadata` | Ticker → asset-class / sleeve / signal-type lookup | built by `pull_universe_data.py` |
+
+- [`data/raw/multi_asset_coverage.csv`](data/raw/multi_asset_coverage.csv) —
+  per-ticker first-available-date table written by `pull_universe_data.py`,
+  used as a sanity check on partial-universe handling.
+
+### Reproducing the workbook from scratch
+
+```bash
+python scripts/pull_universe_data.py     # builds multi_asset_universe.xlsx
+python scripts/add_fx_data.py            # appends FX sheets
+```
+
+The repository ships with `multi_asset_universe.xlsx` already built, so the
+notebooks run without re-pulling. Re-running the scripts will overwrite the
+workbook with the latest data available from Yahoo Finance and FRED at run
+time.
 
 ## Notes
 
