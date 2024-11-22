@@ -57,13 +57,15 @@ Image versions:
 1. Create the environment once with `conda env create -f env.yml`.
 2. Activate it with `conda activate MATH5320`.
 3. Install the package locally with `pip install -e .`.
-4. Regenerate the figure set with `python scripts/generate_visualizations.py`.
-5. Rebuild the notebooks with `python scripts/build_final_submission_notebook.py` and `python scripts/build_no_lookahead_notebook.py`.
-6. Execute the notebooks with `jupyter nbconvert --to notebook --execute --inplace notebooks/FINAL_SUBMISSION.ipynb` and `jupyter nbconvert --to notebook --execute --inplace notebooks/09_no_lookahead_verification.ipynb`.
-7. Rebuild the report source export with `python scripts/build_report_docx.py`.
-8. Run `pytest tests/ -v` if you want the full automated check suite.
+4. (Optional) Regenerate the figure set with `python scripts/generate_visualizations.py`.
+5. Re-execute the notebooks if you want fresh outputs:
+   `jupyter nbconvert --to notebook --execute --inplace notebooks/FINAL_SUBMISSION.ipynb` and
+   `jupyter nbconvert --to notebook --execute --inplace notebooks/09_no_lookahead_verification.ipynb`.
+6. Run `pytest tests/ -v` for the full automated check suite.
 
-For interactive review, open [notebooks/FINAL_SUBMISSION.ipynb](notebooks/FINAL_SUBMISSION.ipynb) in Jupyter Lab after Step 6.
+The notebooks ship with all outputs already embedded, so for interactive review
+just open [notebooks/FINAL_SUBMISSION.ipynb](notebooks/FINAL_SUBMISSION.ipynb) in
+Jupyter Lab.
 
 ## Repository Layout
 
@@ -105,9 +107,6 @@ For interactive review, open [notebooks/FINAL_SUBMISSION.ipynb](notebooks/FINAL_
 │       └── expanded_vs_baseline_growth.png
 ├── scripts/
 │   ├── add_fx_data.py
-│   ├── build_final_submission_notebook.py
-│   ├── build_no_lookahead_notebook.py
-│   ├── build_report_docx.py
 │   ├── generate_visualizations.py
 │   └── pull_universe_data.py
 ├── src/
@@ -245,9 +244,9 @@ time.
 - The teaching team confirmed that a Python notebook is acceptable in place of
   a separate Excel model as long as the data handling, calculations, summary
   statistics, and required charts are embedded directly in the notebook.
-- [REPORT.md](REPORT.md) and [scripts/build_report_docx.py](scripts/build_report_docx.py)
-  are kept so the exported report can be regenerated from the repository text
-  source.
+- [outputs/MATH5380 Report.docx](outputs/MATH5380%20Report.docx) and
+  [outputs/MATH5380 Report.pdf](outputs/MATH5380%20Report.pdf) are the final
+  written report in editable and PDF form.
 - [SUPPLEMENTARY_ANALYSIS.md](SUPPLEMENTARY_ANALYSIS.md) holds the extended
   analysis, additional risk figures, and brief caveats that would have been too
   long for the five-page report.
